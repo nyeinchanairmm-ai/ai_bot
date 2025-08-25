@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 from db import get_db_connection, init_db
-from openai_client import get_gpt_response
+# from openai_client import get_gpt_response
+from openai_client import get_bot_response
+
 
 app = Flask(__name__)
 init_db()
@@ -19,7 +21,7 @@ def chat():
     conn.commit()
 
     # Get AI response
-    ai_response = get_gpt_response(user_message)
+    ai_response = get_bot_response(user_message)
 
     # Save AI response
     conn.execute("INSERT INTO messages (role, content) VALUES (?, ?)", ("assistant", ai_response))
