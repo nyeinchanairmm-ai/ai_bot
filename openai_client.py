@@ -1,6 +1,9 @@
 import openai
 import os
-from db import session, ChatHistory
+# from db import session, ChatHistory
+# from db import get_db_connection
+from db import init_db, ChatHistory
+
 
 # API Key (Env var မှာထားသင့်)
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -23,8 +26,8 @@ def get_bot_response(user_message: str) -> str:
 
         # Database မှာ သိမ်းဆည်း
         chat_record = ChatHistory(user_message=user_message, bot_response=answer)
-        session.add(chat_record)
-        session.commit()
+        init_db.add(chat_record)
+        init_db.commit()
 
         return answer
 
