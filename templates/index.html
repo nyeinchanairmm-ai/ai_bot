@@ -33,52 +33,56 @@
         </form>
     </div>
 
-    <script>
-        const chatBox = document.getElementById("chatBox");
-        const chatForm = document.getElementById("chatForm");
-        const userInput = document.getElementById("userInput");
+<script>
+    const chatBox = document.getElementById("chatBox");
+    const chatForm = document.getElementById("chatForm");
+    const userInput = document.getElementById("userInput");
 
-        chatForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const message = userInput.value.trim();
-            if (!message) return;
+    // Function: show one message
+    function addMessage(role, content) {
+        const msg = document.createElement("div");
+        msg.className = `message ${role}`;
+        msg.textContent = content;
+        chatBox.appendChild(msg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-            // Show user message
-            const userMsg = document.createElement("div");
-            userMsg.className = "message user";
-            userMsg.textContent = message;
-            chatBox.appendChild(userMsg);
+    // ✅ Load history when page loads
+    async function loadHistory() {
+        try {
+            const res = await fetch("/api/messages");
+            const messages = await res.json();
+            chatBox.innerHTML = ""; // clear old
+            messages.forEach(m => addMessage(m.role, m.content));
+        } catch (err) {
+            console.error("Failed to load history:", err);
+        }
+    }
 
-            userInput.value = "";
-            chatBox.scrollTop = chatBox.scrollHeight;
+    // ✅ Handle new user submit
+    chatForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const message = userInput.value.trim();
+        if (!message) return;
 
-            try {
-                // Send to backend
-                const response = await fetch("/api/messages", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ role: "user", content: message })
-                });
-                const data = await response.json();
+        addMessage("user", message);
+        userInput.value = "";
 
-                // Fetch chat history from backend
-                const historyRes = await fetch("/api/messages");
-                const history = await historyRes.json();
+        try {
+            const response = await fetch("/api/messages", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            addMessage("bot", data.content);
+        } catch (err) {
+            console.error("Error sending message:", err);
+        }
+    });
 
-                // Show bot response (latest message)
-                const botMessage = history[history.length - 1];
-                if (botMessage.role === "bot") {
-                    const botMsg = document.createElement("div");
-                    botMsg.className = "message bot";
-                    botMsg.textContent = botMessage.content;
-                    chatBox.appendChild(botMsg);
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                }
-
-            } catch (err) {
-                console.error(err);
-            }
-        });
-    </script>
+    // ✅ Load history on first page open
+    window.onload = loadHistory;
+</script>
 </body>
 </html>
