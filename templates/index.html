@@ -38,6 +38,24 @@
     const chatForm = document.getElementById("chatForm");
     const userInput = document.getElementById("userInput");
 
+    async function sendMessage() {
+    const userMessage = document.getElementById("message").value;
+    const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: userMessage })
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        document.getElementById("chat").innerHTML += "<p><b>You:</b> " + userMessage + "</p>";
+        document.getElementById("chat").innerHTML += "<p><b>Bot:</b> " + data.response + "</p>";
+    } else {
+        console.error("Error:", response.status);
+    }
+}
     // Function: show one message
     function addMessage(role, content) {
         const msg = document.createElement("div");
