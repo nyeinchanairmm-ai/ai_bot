@@ -18,3 +18,18 @@ def get_bot_response(user_message: str) -> str:
         return answer
     except Exception as e:
         return f"⚠️ Error: {str(e)}"
+
+    """
+    Dummy bot response for testing (no API call).
+    """
+    # အလွယ်တကူ sample response ပေး
+    responses = [
+        "Hello! I'm a dummy bot 🤖",
+        "You said: " + user_message,
+        "This is just a test response 🚀",
+        "Everything is working fine ✅"
+    ]
+    
+    # တစ်ခါလုံး random တစ်ခု ပြန်ပေး
+    import random
+    return random.choice(responses)
