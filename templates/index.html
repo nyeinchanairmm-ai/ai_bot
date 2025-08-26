@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat Bot</title>
-    <!-- <link rel="icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/png"> -->
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> -->
     <style>
         body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 50px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
         h1 { text-align: center; color: #333; }
-        .chat-box { border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: auto; margin-bottom: 10px; background: #fafafa; }
+        .chat-box { border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; margin-bottom: 10px; background: #fafafa; }
         .message { margin-bottom: 10px; }
         .message.bot { color: #007bff; }
         .message.user { color: #28a745; text-align: right; }
@@ -24,9 +21,7 @@
 <body>
     <div class="container">
         <h1>AI Chat Bot</h1>
-        <div class="chat-box" id="chatBox">
-            <!-- Messages will appear here -->
-        </div>
+        <div class="chat-box" id="chatBox"></div>
         <form id="chatForm">
             <input type="text" id="userInput" placeholder="Type your message..." required>
             <button type="submit">Send</button>
@@ -38,25 +33,7 @@
     const chatForm = document.getElementById("chatForm");
     const userInput = document.getElementById("userInput");
 
-    async function sendMessage() {
-    const userMessage = document.getElementById("message").value;
-    const response = await fetch("/api/messages", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: userMessage })
-    });
-
-    if (response.ok) {
-        const data = await response.json();
-        document.getElementById("chat").innerHTML += "<p><b>You:</b> " + userMessage + "</p>";
-        document.getElementById("chat").innerHTML += "<p><b>Bot:</b> " + data.response + "</p>";
-    } else {
-        console.error("Error:", response.status);
-    }
-}
-    // Function: show one message
+    // Show a single message in chat box
     function addMessage(role, content) {
         const msg = document.createElement("div");
         msg.className = `message ${role}`;
@@ -65,19 +42,19 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // ✅ Load history when page loads
+    // Load full message history from backend
     async function loadHistory() {
         try {
             const res = await fetch("/api/messages");
             const messages = await res.json();
-            chatBox.innerHTML = ""; // clear old
+            chatBox.innerHTML = "";
             messages.forEach(m => addMessage(m.role, m.content));
         } catch (err) {
             console.error("Failed to load history:", err);
         }
     }
 
-    // ✅ Handle new user submit
+    // Handle new message submission
     chatForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const message = userInput.value.trim();
@@ -92,14 +69,21 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message })
             });
-            const data = await response.json();
-            addMessage("bot", data.content);
+
+            if (response.ok) {
+                const data = await response.json();
+                addMessage("bot", data.content);
+            } else {
+                addMessage("bot", "⚠️ Error sending message.");
+                console.error("Error:", response.status);
+            }
         } catch (err) {
-            console.error("Error sending message:", err);
+            addMessage("bot", "⚠️ Connection error.");
+            console.error(err);
         }
     });
 
-    // ✅ Load history on first page open
+    // Load history when page loads
     window.onload = loadHistory;
 </script>
 </body>
