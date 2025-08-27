@@ -5,23 +5,22 @@
   box-sizing: border-box;
 }
 
-/* Light Mode (default) */
+/* Base / Desktop */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #e0eafc, #cfdef3); /* light gradient */
-  color: #111;
+  background: linear-gradient(135deg, #1e1e2f, #2d2d44);
+  color: #fff;
   transition: background 0.3s, color 0.3s;
 }
 
-
 .container {
-  max-width: 700px;
+  max-width: 700px; /* Desktop width */
   margin: 80px auto;
-  background: rgba(255, 255, 255, 0.95); /* light and solid */
+  background: rgba(0,0,0,0.45);
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
   position: relative;
 }
 
@@ -46,45 +45,40 @@ body {
   font-weight: 600;
 }
 
+/* Chat box */
 .chat-box {
   position: relative;
-  border: 1px solid #ccc;
-  height: 450px;
+  border: 1px solid #ddd;
+  height: 400px;
   overflow-y: auto;
   margin-bottom: 10px;
-  background: rgba(255, 255, 255, 0.85); /* more solid for light mode */
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   z-index: 1;
   backdrop-filter: blur(6px);
 }
 
-
-/* Avatar background overlay for chat-box */
+/* Avatar overlay */
 .chat-box::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url("static/avatar.jpg") no-repeat center center;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("{{ url_for('static', filename='avatar.jpg') }}") no-repeat center center;
     background-size: cover;
-    opacity: 0.35; /* ပေါ်လာအောင် - 0.2 → 0.35 */
-    filter: blur(4px); /* Blur effect နည်းနည်း */
-    z-index: -1; /* စာတွေထက်နောက်မှာထားမယ် */
+    opacity: 0.35;
+    filter: blur(4px);
+    z-index: -1;
 }
+
+/* Messages */
 .message {
   margin-bottom: 12px;
   font-size: 0.95rem;
   line-height: 1.4;
 }
 
-.message.bot { color: #007bff; }
-.message.user {
-  color: #28a745;
-  text-align: right;
-}
-
+.message.bot { color: #00c3ff; }
+.message.user { color: #50fa7b; text-align: right; }
 
 /* Input area */
 form {
@@ -117,7 +111,7 @@ button:hover {
   background: linear-gradient(135deg, #0056b3, #0096d6);
 }
 
-/* Top-right & Top-left buttons */
+/* Top-left & top-right buttons */
 .top-btn {
   position: absolute;
   top: 15px;
@@ -136,13 +130,8 @@ button:hover {
   background: rgba(255,255,255,0.35);
 }
 
-#darkModeBtn {
-  right: 15px;
-}
-
-#settingsBtn {
-  left: 15px;
-}
+#darkModeBtn { right: 15px; }
+#settingsBtn { left: 15px; }
 
 /* Modal (settings box) */
 .modal {
@@ -161,16 +150,8 @@ button:hover {
   width: 280px;
 }
 
-.modal h2 {
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
-
-.modal p {
-  margin: 6px 0;
-  font-size: 0.95rem;
-}
-
+.modal h2 { font-size: 1.2rem; margin-bottom: 10px; }
+.modal p { margin: 6px 0; font-size: 0.95rem; }
 .close {
   position: absolute;
   top: 8px;
@@ -181,29 +162,26 @@ button:hover {
 }
 
 /* Dark mode */
-/* Dark Mode */
 body.dark {
   background: linear-gradient(135deg, #121212, #1c1c1c);
   color: #eee;
 }
 
-body.dark .container {
-  background: rgba(20,20,20,0.95); /* dark solid */
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
-}
-
-body.dark .chat-box {
-  background: rgba(40,40,40,0.85); /* dark contrast */
-}
-
+body.dark .container { background: rgba(20,20,20,0.95); }
+body.dark .chat-box { background: rgba(40,40,40,0.85); }
 body.dark .message.bot { color: #00c3ff; }
 body.dark .message.user { color: #50fa7b; }
 
-/* ---------------- Responsive Media Queries ---------------- */
+/* Responsive media queries */
 
-/* Mobile: max-width 480px */
+/* Small devices (mobile) */
 @media (max-width: 480px) {
-  .container { margin: 40px 10px; padding: 15px; max-width: 95%; border-radius: 15px; }
+  .container {
+    margin: 40px 10px;
+    padding: 15px;
+    max-width: 95%;
+    border-radius: 15px;
+  }
   .header img { width: 50px; height: 50px; margin-right: 8px; }
   .header h1 { font-size: 1.2rem; }
   .chat-box { height: 300px; border-radius: 12px; padding: 10px; }
@@ -212,7 +190,7 @@ body.dark .message.user { color: #50fa7b; }
   .top-btn { padding: 6px 10px; font-size: 0.8rem; }
 }
 
-/* Tablet: min-width 481px & max-width 768px */
+/* Medium devices (tablet) */
 @media (min-width: 481px) and (max-width: 768px) {
   .container { margin: 60px 20px; padding: 18px; max-width: 90%; }
   .chat-box { height: 350px; }
