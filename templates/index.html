@@ -1,221 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AMARA NYEIN - AI Chat Bot</title>
-  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMARA NYEIN - AI Chat Bot</title>
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+.chat-box::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: url("{{ url_for('static', filename='avatar.jpg') }}") no-repeat center center;
+    background-size: cover;
+    opacity: 0.35;
+    filter: blur(4px);
+    z-index: -1;
+}
+</style>
 <body>
-  <div class="container">
-    <button id="settingsBtn" class="top-btn">⚙️</button>
-    <button id="darkModeBtn" class="top-btn">🌙</button>
+    <!-- Top buttons -->
+    <button class="top-btn" id="settingsBtn">Settings ⚙️</button>
+    <button class="top-btn" id="darkModeBtn">🌙</button>
 
-    <div class="header">
-        <img src="static/avatar.jpg" alt="Avatar">
-        <h1>AMARA NYEIN (အမရာငြိမ်း) - AI Chat Bot</h1>
-    </div>
-
-    <div class="chat-box" id="chatBox"></div>
-
-    <form id="chatForm">
-        <input type="text" id="userInput" placeholder="Type your message..." required>
-        <button type="submit">Send</button>
-    </form>
-</div>
-
-<!-- Modal -->
-<div id="settingsModal" class="modal">
-    <span class="close" id="closeModal">&times;</span>
-    <h2>App Info</h2>
-    <p>Version 1.0</p>
-    <p>Created by AI GURU</p>
-    <p>Powered by Python</p>
-</div>
-
-<script>
-  const chatBox = document.getElementById("chatBox");
-  const chatForm = document.getElementById("chatForm");
-  const userInput = document.getElementById("userInput");
-//   const darkToggle = document.getElementById("darkToggle");
-  const darkBtn = document.getElementById("darkModeBtn");
-const settingsBtn = document.getElementById("settingsBtn");
-const modal = document.getElementById("settingsModal");
-const closeModal = document.getElementById("closeModal");
-
-  // Add messages
-  function addMessage(role, content) {
-      const msg = document.createElement("div");
-      msg.className = `message ${role}`;
-      msg.textContent = content;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-  }
-
-  // Load chat history
-  async function loadHistory() {
-      try {
-          const res = await fetch("/api/messages");
-          const messages = await res.json();
-          chatBox.innerHTML = "";
-          messages.forEach(m => addMessage(m.role, m.content));
-      } catch (err) {
-          console.error("Failed to load history:", err);
-      }
-  }
-
-  // Submit new message
-  chatForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const message = userInput.value.trim();
-      if (!message) return;
-      addMessage("user", message);
-      userInput.value = "";
-      try {
-          const response = await fetch("/api/messages", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ message })
-          });
-          if (response.ok) {
-              const data = await response.json();
-              addMessage("bot", data.content);
-          } else {
-              addMessage("bot", "⚠️ Error sending message.");
-          }
-      } catch (err) {
-          addMessage("bot", "⚠️ Connection error.");
-      }
-  });
-
-  // Dark mode toggle
-//   darkToggle.addEventListener("click", () => {
-//     document.body.classList.toggle("dark-mode");
-//     if (document.body.classList.contains("dark-mode")) {
-//       darkToggle.textContent = "☀️ Light Mode";
-//     } else {
-//       darkToggle.textContent = "🌙 Dark Mode";
-//     }
-//   });
-// Dark mode toggle
-darkBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  if(document.body.classList.contains("dark")){
-    darkBtn.textContent = "☀️ Light Mode";
-  } else {
-    darkBtn.textContent = "🌙 Dark Mode";
-  }
-});
-
-// Settings modal toggle
-settingsBtn.addEventListener("click", () => {
-    modal.style.display = "block";
-});
-
-closeModal.addEventListener("click", () => {
-    modal.style.display = "none";
-});
-
-window.onclick = (e) => {
-    if (e.target == modal) {
-        modal.style.display = "none";
-    }
-};
-  // On load
-  window.onload = loadHistory;
-</script>
-</body>
-</html>
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat Bot</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <style>
-        body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
-        .container { max-width: 600px; margin: 50px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
-        h1 { text-align: center; color: #333; }
-        .chat-box { border: 1px solid #ddd; padding: 10px; height: 400px; overflow-y: auto; margin-bottom: 10px; background: #fafafa; }
-        .message { margin-bottom: 10px; }
-        .message.bot { color: #007bff; }
-        .message.user { color: #28a745; text-align: right; }
-        input[type="text"] { width: 80%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
-        button { padding: 10px 15px; border: none; border-radius: 5px; background: #007bff; color: white; cursor: pointer; }
-        button:hover { background: #0056b3; }
-    </style>
-</head>
-<body>
+    <!-- Main container -->
     <div class="container">
-        <h1>AI Chat Bot</h1>
+
+        <!-- Header avatar and title -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Avatar">
+            <h1>AMARA NYEIN (အမရာငြိမ်း)</h1>
+            <p class="subtitle">AI Chat Bot</p>
+        </div>
+
+        <!-- Chatbox -->
         <div class="chat-box" id="chatBox"></div>
+
+        <!-- Input form -->
         <form id="chatForm">
             <input type="text" id="userInput" placeholder="Type your message..." required>
             <button type="submit">Send</button>
         </form>
     </div>
 
+    <!-- Modal settings box -->
+    <div class="modal" id="settingsModal">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>AMARA NYEIN Chatbot</h2>
+        <p>Version 1.0</p>
+        <p>Created by AI GURU</p>
+        <p>Power by Python</p>
+    </div>
+
 <script>
-    const chatBox = document.getElementById("chatBox");
-    const chatForm = document.getElementById("chatForm");
-    const userInput = document.getElementById("userInput");
+const chatBox = document.getElementById("chatBox");
+const chatForm = document.getElementById("chatForm");
+const userInput = document.getElementById("userInput");
 
-    // Show a single message in chat box
-    function addMessage(role, content) {
-        const msg = document.createElement("div");
-        msg.className = `message ${role}`;
-        msg.textContent = content;
-        chatBox.appendChild(msg);
-        chatBox.scrollTop = chatBox.scrollHeight;
+// Load full message history from backend
+async function loadHistory() {
+    try {
+        const res = await fetch("/api/messages");
+        const messages = await res.json();
+        chatBox.innerHTML = "";
+        messages.forEach(m => addMessage(m.role, m.content));
+    } catch (err) {
+        console.error("Failed to load history:", err);
     }
+}
 
-    // Load full message history from backend
-    async function loadHistory() {
-        try {
-            const res = await fetch("/api/messages");
-            const messages = await res.json();
-            chatBox.innerHTML = "";
-            messages.forEach(m => addMessage(m.role, m.content));
-        } catch (err) {
-            console.error("Failed to load history:", err);
+// Show a message
+function addMessage(role, content) {
+    const msg = document.createElement("div");
+    msg.className = `message ${role}`;
+    msg.textContent = content;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// Submit message
+chatForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = userInput.value.trim();
+    if (!message) return;
+    addMessage("user", message);
+    userInput.value = "";
+    try {
+        const response = await fetch("/api/messages", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message })
+        });
+        if (response.ok) {
+            const data = await response.json();
+            addMessage("bot", data.content);
+        } else {
+            addMessage("bot", "⚠️ Error sending message.");
         }
+    } catch (err) {
+        addMessage("bot", "⚠️ Connection error.");
     }
+});
 
-    // Handle new message submission
-    chatForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const message = userInput.value.trim();
-        if (!message) return;
+// Dark mode toggle
+const darkBtn = document.getElementById("darkModeBtn");
+darkBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    darkBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
 
-        addMessage("user", message);
-        userInput.value = "";
+// Settings modal
+const settingsBtn = document.getElementById("settingsBtn");
+const modal = document.getElementById("settingsModal");
+const closeModal = document.getElementById("closeModal");
 
-        try {
-            const response = await fetch("/api/messages", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message })
-            });
+settingsBtn.addEventListener("click", () => modal.style.display = "block");
+closeModal.addEventListener("click", () => modal.style.display = "none");
+window.addEventListener("click", (e) => { if(e.target === modal) modal.style.display = "none"; });
 
-            if (response.ok) {
-                const data = await response.json();
-                addMessage("bot", data.content);
-            } else {
-                addMessage("bot", "⚠️ Error sending message.");
-                console.error("Error:", response.status);
-            }
-        } catch (err) {
-            addMessage("bot", "⚠️ Connection error.");
-            console.error(err);
-        }
-    });
-
-    // Load history when page loads
-    window.onload = loadHistory;
+// Load history on page load
+window.onload = loadHistory;
 </script>
 </body>
-</html> -->
+</html>
