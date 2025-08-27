@@ -9,26 +9,40 @@
 </head>
 <body>
   <div class="container">
-    <header>
-      <img src="{{ url_for('static', filename='avatar.jpg') }}" alt="Bot Avatar" class="avatar">
-      <h1>AMARA NYEIN (အမရာငြိမ်း) - AI Chat Bot</h1>
-      <button id="darkToggle" class="toggle-btn">🌙 Dark Mode</button>
-    </header>
+    <button id="settingsBtn" class="top-btn">⚙️</button>
+    <button id="darkModeBtn" class="top-btn">🌙</button>
 
-    <main>
-      <div class="chat-box" id="chatBox"></div>
-      <form id="chatForm" class="chat-form">
+    <div class="header">
+        <img src="static/avatar.jpg" alt="Avatar">
+        <h1>AMARA NYEIN (အမရာငြိမ်း) - AI Chat Bot</h1>
+    </div>
+
+    <div class="chat-box" id="chatBox"></div>
+
+    <form id="chatForm">
         <input type="text" id="userInput" placeholder="Type your message..." required>
-        <button type="submit">➤</button>
-      </form>
-    </main>
-  </div>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<!-- Modal -->
+<div id="settingsModal" class="modal">
+    <span class="close" id="closeModal">&times;</span>
+    <h2>App Info</h2>
+    <p>Version 1.0</p>
+    <p>Created by AI GURU</p>
+    <p>Powered by Python</p>
+</div>
 
 <script>
   const chatBox = document.getElementById("chatBox");
   const chatForm = document.getElementById("chatForm");
   const userInput = document.getElementById("userInput");
-  const darkToggle = document.getElementById("darkToggle");
+//   const darkToggle = document.getElementById("darkToggle");
+  const darkBtn = document.getElementById("darkModeBtn");
+const settingsBtn = document.getElementById("settingsBtn");
+const modal = document.getElementById("settingsModal");
+const closeModal = document.getElementById("closeModal");
 
   // Add messages
   function addMessage(role, content) {
@@ -76,15 +90,34 @@
   });
 
   // Dark mode toggle
-  darkToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    if (document.body.classList.contains("dark-mode")) {
-      darkToggle.textContent = "☀️ Light Mode";
-    } else {
-      darkToggle.textContent = "🌙 Dark Mode";
-    }
-  });
+//   darkToggle.addEventListener("click", () => {
+//     document.body.classList.toggle("dark-mode");
+//     if (document.body.classList.contains("dark-mode")) {
+//       darkToggle.textContent = "☀️ Light Mode";
+//     } else {
+//       darkToggle.textContent = "🌙 Dark Mode";
+//     }
+//   });
+// Dark mode toggle
+darkBtn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    darkBtn.textContent = document.body.classList.contains("dark") ? "☀️" : "🌙";
+});
 
+// Settings modal toggle
+settingsBtn.addEventListener("click", () => {
+    modal.style.display = "block";
+});
+
+closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
+});
+
+window.onclick = (e) => {
+    if (e.target == modal) {
+        modal.style.display = "none";
+    }
+};
   // On load
   window.onload = loadHistory;
 </script>
