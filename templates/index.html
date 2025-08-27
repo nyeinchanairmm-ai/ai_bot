@@ -41,6 +41,8 @@
             <input type="text" id="userInput" placeholder="Type your message..." required>
             <button type="submit">Send</button>
         </form>
+
+            <button id="clearChatBtn" class="top-btn">Clear Chat 🗑️</button>
     </div>
 
     <!-- Modal settings box -->
@@ -56,6 +58,8 @@
 const chatBox = document.getElementById("chatBox");
 const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
+// const clearBtn = document.getElementById("clearChatBtn");
+
 
 // Load full message history from backend
 async function loadHistory() {
@@ -120,6 +124,25 @@ window.addEventListener("click", (e) => { if(e.target === modal) modal.style.dis
 
 // Load history on page load
 window.onload = loadHistory;
+
+//Clear chat
+const clearBtn = document.getElementById("clearChatBtn");
+
+clearBtn.addEventListener("click", async () => {
+    if(!confirm("Are you sure you want to clear the chat?")) return;
+    try {
+        const res = await fetch("/api/clear", { method:"POST" });
+        if(res.ok){
+            chatBox.innerHTML = "";
+        } else {
+            alert("Failed to clear chat.");
+        }
+    } catch(err){
+        console.error(err);
+        alert("Error clearing chat.");
+    }
+});
+
 </script>
 </body>
 </html>
