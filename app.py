@@ -58,6 +58,8 @@ def clear_chat():
     conn.close()
     return jsonify({"status": "cleared"})
 
+if __name__ == "__main__":
+    app.run(debug=True)
 
 
 # from flask import Flask, render_template, request, jsonify
