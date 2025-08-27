@@ -5,21 +5,23 @@
   box-sizing: border-box;
 }
 
+/* Light Mode (default) */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #1e1e2f, #2d2d44);
-  color: #fff;
+  background: linear-gradient(135deg, #e0eafc, #cfdef3); /* light gradient */
+  color: #111;
   transition: background 0.3s, color 0.3s;
 }
 
+
 .container {
-  max-width: 600px;
+  max-width: 700px;
   margin: 80px auto;
-  background: rgba(0,0,0,0.45); /* Transparent box */
+  background: rgba(255, 255, 255, 0.95); /* light and solid */
   backdrop-filter: blur(10px);
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
   position: relative;
 }
 
@@ -46,45 +48,43 @@ body {
 
 .chat-box {
   position: relative;
-  border: 1px solid #ddd;
-  height: 300px;
+  border: 1px solid #ccc;
+  height: 450px;
   overflow-y: auto;
   margin-bottom: 10px;
-  background: rgba(255, 255, 255, 0.1); /* transparency */
+  background: rgba(255, 255, 255, 0.85); /* more solid for light mode */
   border-radius: 10px;
   z-index: 1;
-  backdrop-filter: blur(6px); /* blur effect for background */
+  backdrop-filter: blur(6px);
 }
 
-/* Avatar background overlay */
+
+/* Avatar background overlay for chat-box */
 .chat-box::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;   /* <-- fixed */
-  bottom: 0;
-  background: url("static/avatar.jpg") no-repeat center center;
-  background-size: cover;
-  opacity: 0.2;  /* အမှိန် */
-  filter: blur(4px); /* ပုံကို blur */
-  z-index: -1; /* စာတွေထက်နောက်မှာထားမယ် */
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("static/avatar.jpg") no-repeat center center;
+    background-size: cover;
+    opacity: 0.35; /* ပေါ်လာအောင် - 0.2 → 0.35 */
+    filter: blur(4px); /* Blur effect နည်းနည်း */
+    z-index: -1; /* စာတွေထက်နောက်မှာထားမယ် */
 }
-
 .message {
   margin-bottom: 12px;
   font-size: 0.95rem;
   line-height: 1.4;
 }
 
-.message.bot {
-  color: #00c3ff;
-}
-
+.message.bot { color: #007bff; }
 .message.user {
-  color: #50fa7b;
+  color: #28a745;
   text-align: right;
 }
+
 
 /* Input area */
 form {
@@ -181,15 +181,39 @@ button:hover {
 }
 
 /* Dark mode */
+/* Dark Mode */
 body.dark {
-  background: #121212;
-  color: #f5f5f5;
+  background: linear-gradient(135deg, #121212, #1c1c1c);
+  color: #eee;
 }
 
 body.dark .container {
-  background: rgba(40,40,40,0.85);
+  background: rgba(20,20,20,0.95); /* dark solid */
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
 }
 
 body.dark .chat-box {
-  background: rgba(60,60,60,0.5);
+  background: rgba(40,40,40,0.85); /* dark contrast */
+}
+
+body.dark .message.bot { color: #00c3ff; }
+body.dark .message.user { color: #50fa7b; }
+
+/* ---------------- Responsive Media Queries ---------------- */
+
+/* Mobile: max-width 480px */
+@media (max-width: 480px) {
+  .container { margin: 40px 10px; padding: 15px; max-width: 95%; border-radius: 15px; }
+  .header img { width: 50px; height: 50px; margin-right: 8px; }
+  .header h1 { font-size: 1.2rem; }
+  .chat-box { height: 300px; border-radius: 12px; padding: 10px; }
+  input[type="text"] { padding: 10px; font-size: 0.9rem; }
+  button { padding: 10px 12px; font-size: 0.9rem; }
+  .top-btn { padding: 6px 10px; font-size: 0.8rem; }
+}
+
+/* Tablet: min-width 481px & max-width 768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .container { margin: 60px 20px; padding: 18px; max-width: 90%; }
+  .chat-box { height: 350px; }
 }
