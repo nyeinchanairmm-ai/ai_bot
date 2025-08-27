@@ -130,8 +130,8 @@ body.dark .message.user { color:#50fa7b; }
 
 /* Mobile */
 @media(max-width:480px){
-  .container{ margin:40px 10px; padding:15px; max-width:95%; }
-  .chat-box{ height:300px; padding:8px; border-radius:10px; }
+  .container{ margin:55px 10px; padding:15px; max-width:95%; }
+  .chat-box{ height:380px; padding:8px; border-radius:10px; }
   .header img{ width:60px; height:60px; }
   .header h1{ font-size:1.3rem; }
   input[type="text"]{ padding:10px; font-size:0.9rem; }
@@ -141,6 +141,6 @@ body.dark .message.user { color:#50fa7b; }
 
 /* Tablet */
 @media(min-width:481px) and (max-width:768px){
-  .container{ margin:60px 20px; padding:18px; max-width:90%; }
-  .chat-box{ height:350px; }
+  .container{ margin:60px 20px; padding:18px; max-width:95%; }
+  .chat-box{ height:450px; }
 }
