@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-from bot import get_bot_response  # သင့် Gemini API function ကို import လုပ်
+from google import genai
 import sqlite3, os
 
 app = Flask(__name__)
@@ -18,9 +18,38 @@ def init_db():
 
 init_db()
 
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/api/messages", methods=["POST"])
+def post_message():
+    data = request.json
+    message = data.get("message", "").strip()
+    if not message:
+        return jsonify({"content": "No message received"}), 400
+
+    try:
+        # Gemini API ကို တိုက်ရိုက် call
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=message
+        )
+        ai_response = response.text.strip()
+
+        # DB မှာ save
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("INSERT INTO messages(role, content) VALUES (?, ?)", ("user", message))
+        c.execute("INSERT INTO messages(role, content) VALUES (?, ?)", ("bot", ai_response))
+        conn.commit()
+        conn.close()
+
+        return jsonify({"content": ai_response})
+    except Exception as e:
+        return jsonify({"content": f"⚠️ Error: {str(e)}"}), 500
 
 @app.route("/api/messages", methods=["GET"])
 def get_messages():
@@ -31,26 +60,6 @@ def get_messages():
     conn.close()
     messages = [{"role": r[0], "content": r[1]} for r in rows]
     return jsonify(messages)
-
-@app.route("/api/messages", methods=["POST"])
-def post_message():
-    data = request.json
-    message = data.get("message", "").strip()
-    if not message:
-        return jsonify({"content": "No message received"}), 400
-
-    # Gemini API response ကိုယူ
-    ai_response = get_bot_response(message)
-
-    # DB မှာ save
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute("INSERT INTO messages(role, content) VALUES (?, ?)", ("user", message))
-    c.execute("INSERT INTO messages(role, content) VALUES (?, ?)", ("bot", ai_response))
-    conn.commit()
-    conn.close()
-
-    return jsonify({"content": ai_response})
 
 @app.route("/api/clear", methods=["POST"])
 def clear_chat():
