@@ -1,12 +1,10 @@
 from flask import Flask, render_template, request, jsonify
-import sqlite3
-import os
+from bot import get_bot_response  # သင့် Gemini API function ကို import လုပ်
+import sqlite3, os
 
 app = Flask(__name__)
-
 DB_PATH = 'chat.db'
 
-# Initialize database
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -20,12 +18,10 @@ def init_db():
 
 init_db()
 
-# ✅ Root route (Frontend UI)
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# Get all messages
 @app.route("/api/messages", methods=["GET"])
 def get_messages():
     conn = sqlite3.connect(DB_PATH)
@@ -36,24 +32,26 @@ def get_messages():
     messages = [{"role": r[0], "content": r[1]} for r in rows]
     return jsonify(messages)
 
-# Add new message
 @app.route("/api/messages", methods=["POST"])
 def post_message():
     data = request.json
     message = data.get("message", "").strip()
-    if message:
-        # Here you would call your AI API for response
-        ai_response = f"Echo: {message}"  # Placeholder
-        conn = sqlite3.connect(DB_PATH)
-        c = conn.cursor()
-        c.execute("INSERT INTO messages(role, content) VALUES (?,?)", ("user", message))
-        c.execute("INSERT INTO messages(role, content) VALUES (?,?)", ("bot", ai_response))
-        conn.commit()
-        conn.close()
-        return jsonify({"content": ai_response})
-    return jsonify({"content": "No message received"}), 400
+    if not message:
+        return jsonify({"content": "No message received"}), 400
 
-# Clear chat
+    # Gemini API response ကိုယူ
+    ai_response = get_bot_response(message)
+
+    # DB မှာ save
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("INSERT INTO messages(role, content) VALUES (?, ?)", ("user", message))
+    c.execute("INSERT INTO messages(role, content) VALUES (?, ?)", ("bot", ai_response))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"content": ai_response})
+
 @app.route("/api/clear", methods=["POST"])
 def clear_chat():
     conn = sqlite3.connect(DB_PATH)
